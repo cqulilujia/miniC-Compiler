@@ -1,0 +1,25 @@
+int a, b, c;
+
+
+// 斐波拉契
+int fibo(int a)
+{
+    if (a == 1 || a == 2)
+        return 1;
+    return fibo(a - 1) + fibo(a - 2);
+}
+
+/* 主函数 */
+int main()
+{
+    int m, n, i;
+
+    m = read();
+
+    while (i <= m)
+    {
+        n = fibo(i);
+        write(n);
+    }
+    return 1;
+}

@@ -1512,7 +1512,7 @@ yyreduce:
     {
         case 2:
 #line 52 "parser.y" /* yacc.c:1646  */
-    {display((yyvsp[0].ptr),0);}
+    {semantic_Analysis0((yyvsp[0].ptr));}
 #line 1517 "parser.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1608,7 +1608,7 @@ yyreduce:
 
   case 19:
 #line 81 "parser.y" /* yacc.c:1646  */
-    {(yyval.ptr)=mknode(ARRAY_DEC,(yyvsp[-3].ptr),(yyvsp[-1].type_int),NULL,yylineno);}
+    {struct node *temp=mknode(INT,NULL,NULL,NULL,yylineno);temp->type_int=(yyvsp[-1].type_int);(yyval.ptr)->type=INT;(yyval.ptr)=mknode(ARRAY_DEC, (yyvsp[-3].ptr), temp, NULL,yylineno);}
 #line 1613 "parser.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1878,7 +1878,7 @@ yyreduce:
 
   case 64:
 #line 145 "parser.y" /* yacc.c:1646  */
-    {(yyval.ptr)=mknode(EXP_ELE,(yyvsp[-2].ptr),(yyvsp[0].type_id),NULL,yylineno);}
+    {struct node *temp=mknode(ID,NULL,NULL,NULL,yylineno);strcpy((yyval.ptr)->type_id,(yyvsp[0].type_id));(yyval.ptr)=mknode(EXP_ELE,(yyvsp[-2].ptr),temp,NULL,yylineno);}
 #line 1883 "parser.tab.c" /* yacc.c:1646  */
     break;
 
@@ -2165,7 +2165,7 @@ yyreturn:
 
 int main(int argc, char *argv[]){
 	yyin=fopen(argv[1],"r");
-	if (!yyin) return;
+	if (!yyin) return 0;
 	yylineno=1;
 	yyparse();
 	return 0;

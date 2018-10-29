@@ -49,7 +49,7 @@ void display(struct node *,int);
 
 %%
 
-program: ExtDefList    {display($1,0);}     /*显示语法树,语义分析:  { display($1,0); semantic_Analysis0($1);} */
+program: ExtDefList    {semantic_Analysis0($1);}     /*显示语法树,语义分析:  { display($1,0); semantic_Analysis0($1);} */
          ;
 ExtDefList: {$$=NULL;}
           | ExtDef ExtDefList {$$=mknode(EXT_DEF_LIST,$1,$2,NULL,yylineno);}   //每一个EXTDEFLIST的结点，其第1棵子树对应一个外部变量声明或函数
@@ -78,7 +78,7 @@ Tag: ID {$$=mknode(STRUCT_TAG,NULL,NULL,NULL,yylineno);strcpy($$->struct_name,$1
     ;
 
 VarDec:  ID          {$$=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}   //ID结点，标识符符号串存放结点的type_id
-        | VarDec LB INT RB {$$=mknode(ARRAY_DEC,$1,$3,NULL,yylineno);}
+        | VarDec LB INT RB {struct node *temp=mknode(INT,NULL,NULL,NULL,yylineno);temp->type_int=$3;$$->type=INT;$$=mknode(ARRAY_DEC, $1, temp, NULL,yylineno);}
          ;
 
 FuncDec: ID LP VarList RP   {$$=mknode(FUNC_DEC,$3,NULL,NULL,yylineno);strcpy($$->type_id,$1);}//函数名存放在$$->type_id
@@ -142,7 +142,7 @@ Exp:    Exp ASSIGNOP Exp {$$=mknode(ASSIGNOP,$1,$3,NULL,yylineno);strcpy($$->typ
       | ID LP Args RP {$$=mknode(FUNC_CALL,$3,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
       | ID LP RP      {$$=mknode(FUNC_CALL,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
       | Exp LB Exp RB {$$=mknode(EXP_ARRAY,$1,$3,NULL,yylineno);}
-      | Exp DOT ID {$$=mknode(EXP_ELE,$1,$3,NULL,yylineno);}
+      | Exp DOT ID    {struct node *temp=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$3);$$=mknode(EXP_ELE,$1,temp,NULL,yylineno);}
       | ID            {$$=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
       | INT           {$$=mknode(INT,NULL,NULL,NULL,yylineno);$$->type_int=$1;$$->type=INT;}
       | FLOAT         {$$=mknode(FLOAT,NULL,NULL,NULL,yylineno);$$->type_float=$1;$$->type=FLOAT;}
@@ -158,7 +158,7 @@ Args:    Exp COMMA Args    {$$=mknode(ARGS,$1,$3,NULL,yylineno);}
 
 int main(int argc, char *argv[]){
 	yyin=fopen(argv[1],"r");
-	if (!yyin) return;
+	if (!yyin) return 0;
 	yylineno=1;
 	yyparse();
 	return 0;

@@ -1,5 +1,5 @@
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "string.h"
 #include "stdarg.h"
 #include "parser.tab.h"
@@ -117,6 +117,7 @@ struct node
     int pos;    //语法单位所在位置行号
     int offset; //偏移量
     int width;  //占数据字节数
+    int num;
 };
 
 struct symbol
