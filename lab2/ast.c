@@ -179,7 +179,7 @@ void display(struct node *T, int indent)
             printf("%*cFLAOT：%f\n", indent, ' ', T->type_float);
             break;
         case CHAR:
-            printf("%*cCHAR：%s\n", indent, ' ', T->type_char);
+            printf("%*cCHAR：%c\n", indent, ' ', T->type_char);
             break;
         case STRING:
             printf("%*cSTRING：%s\n", indent, ' ', T->type_string);

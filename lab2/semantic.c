@@ -601,9 +601,14 @@ void semantic_Analysis(struct node *T)
         case EXT_DEF_LIST:
             if (!T->ptr[0])
                 break;
+
+            // 语义分析之前先设置偏移地址
             T->ptr[0]->offset = T->offset;
             semantic_Analysis(T->ptr[0]); //访问外部定义列表中的第一个
+            // 之后合并 code
             T->code = T->ptr[0]->code;
+
+            // 可为空
             if (T->ptr[1])
             {
                 T->ptr[1]->offset = T->ptr[0]->offset + T->ptr[0]->width;
@@ -612,19 +617,54 @@ void semantic_Analysis(struct node *T)
             }
             break;
         case EXT_VAR_DEF: //处理外部说明,将第一个孩子(TYPE结点)中的类型送到第二个孩子的类型域
-            T->type = T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT;
-            T->ptr[1]->offset = T->offset;                        //这个外部变量的偏移量向下传递
-            T->ptr[1]->width = T->type == INT ? 4 : 8;            //将一个变量的宽度向下传递
-            ext_var_list(T->ptr[1]);                              //处理外部变量说明中的标识符序列
-            T->width = (T->type == INT ? 4 : 8) * T->ptr[1]->num; //计算这个外部变量说明的宽度
-            T->code = NULL;                                       //这里假定外部变量不支持初始化
+            if (!strcmp(T->ptr[0]->type_id, "int"))
+            {
+                T->type = T->ptr[1]->type = INT;
+                T->ptr[1]->width = 4;
+            }
+            if (!strcmp(T->ptr[0]->type_id, "float"))
+            {
+                T->type = T->ptr[1]->type = FLOAT;
+                T->ptr[1]->width = 8;
+            }
+            if (!strcmp(T->ptr[0]->type_id, "char"))
+            {
+                T->type = T->ptr[1]->type = CHAR;
+                T->ptr[1]->width = 1;
+            }
+            if (!strcmp(T->ptr[0]->type_id, "string"))
+            {
+                T->type = T->ptr[1]->type = STRING;
+            }
+            // T->type = T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT;
+            T->ptr[1]->offset = T->offset; //这个外部变量的偏移量向下传递
+            // T->ptr[1]->width = T->type == INT ? 4 : 8;            //将一个变量的宽度向下传递
+            ext_var_list(T->ptr[1]);                        //处理外部变量说明中的标识符序列
+            T->width = (T->ptr[1]->width) * T->ptr[1]->num; //计算这个外部变量说明的宽度
+            T->code = NULL;                                 //这里假定外部变量不支持初始化
             break;
-        case FUNC_DEF:                                                          //填写函数定义信息到符号表
-            T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT; //获取函数返回类型送到含函数名、参数的结点
-            T->width = 0;                                                       //函数的宽度设置为0，不会对外部变量的地址分配产生影响
-            T->offset = DX;                                                     //设置局部变量在活动记录中的偏移量初值
-            semantic_Analysis(T->ptr[1]);                                       //处理函数名和参数结点部分，这里不考虑用寄存器传递参数
-            T->offset += T->ptr[1]->width;                                      //用形参单元宽度修改函数局部变量的起始偏移量
+        case FUNC_DEF:
+            if (!strcmp(T->ptr[0]->type_id, "int"))
+            {
+                T->ptr[1]->type = INT;
+            }
+            if (!strcmp(T->ptr[0]->type_id, "float"))
+            {
+                T->ptr[1]->type = FLOAT;
+            }
+            if (!strcmp(T->ptr[0]->type_id, "char"))
+            {
+                T->ptr[1]->type = CHAR;
+            }
+            if (!strcmp(T->ptr[0]->type_id, "string"))
+            {
+                T->ptr[1]->type = STRING;
+            } //填写函数定义信息到符号表
+            // T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT; //获取函数返回类型送到含函数名、参数的结点
+            T->width = 0;                  //函数的宽度设置为0，不会对外部变量的地址分配产生影响
+            T->offset = DX;                //设置局部变量在活动记录中的偏移量初值
+            semantic_Analysis(T->ptr[1]);  //处理函数名和参数结点部分，这里不考虑用寄存器传递参数
+            T->offset += T->ptr[1]->width; //用形参单元宽度修改函数局部变量的起始偏移量
             T->ptr[2]->offset = T->offset;
             strcpy(T->ptr[2]->Snext, newLabel()); //函数体语句执行结束后的位置属性
             semantic_Analysis(T->ptr[2]);         //处理函数体结点

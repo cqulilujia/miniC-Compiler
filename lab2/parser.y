@@ -15,7 +15,7 @@ void display(struct node *,int);
 %union {
     int    type_int;
     float  type_float;
-    char type_char[3];
+    char type_char;
     char type_string[31];
     char   type_id[32];
     struct node *ptr;
@@ -56,7 +56,7 @@ ExtDefList: {$$=NULL;}
           | ExtDef ExtDefList {$$=mknode(EXT_DEF_LIST,$1,$2,NULL,yylineno);}   //每一个EXTDEFLIST的结点，其第1棵子树对应一个外部变量声明或函数
           ;
 ExtDef:   Specifier ExtDecList SEMI   {$$=mknode(EXT_VAR_DEF,$1,$2,NULL,yylineno);}   //该结点对应一个外部变量声明
-         | Specifier SEMI
+         | StructSpecifier SEMI {$$=mknode(EXT_STRUCT_DEF,$1,NULL,NULL,yylineno);}
          | Specifier FuncDec CompSt    {$$=mknode(FUNC_DEF,$1,$2,$3,yylineno);}         //该结点对应一个函数定义
          | error SEMI   {$$=NULL;}
          ;
@@ -65,8 +65,8 @@ ExtDecList:  VarDec      {$$=$1;}       /*每一个EXT_DECLIST的结点，其第
            | VarDec COMMA ExtDecList {$$=mknode(EXT_DEC_LIST,$1,$3,NULL,yylineno);}
            ;
 
-Specifier:  TYPE    {$$=mknode(TYPE,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);if($1=="int")$$->type=INT;if($1=="float")$$->type=FLOAT;if($1=="char")$$->type=CHAR;if($1=="string")$$->type=STRING;}
-          | StructSpecifier {}
+Specifier:  TYPE    {$$=mknode(TYPE,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);if(!strcmp($1, "int"))$$->type=INT;if(!strcmp($1, "float"))$$->type=FLOAT;if(!strcmp($1, "char"))$$->type=CHAR;if(!strcmp($1, "string"))$$->type=STRING;}
+           | StructSpecifier {$$=$1;}
            ;
 StructSpecifier: STRUCT OptTag LC DefList RC {$$=mknode(STRUCT_DEF,$2,$4,NULL,yylineno);}
           | STRUCT Tag  {$$=mknode(STRUCT_DEC,$2,NULL,NULL,yylineno);}
@@ -147,8 +147,8 @@ Exp:    Exp ASSIGNOP Exp {$$=mknode(ASSIGNOP,$1,$3,NULL,yylineno);strcpy($$->typ
       | ID            {$$=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
       | INT           {$$=mknode(INT,NULL,NULL,NULL,yylineno);$$->type_int=$1;$$->type=INT;}
       | FLOAT         {$$=mknode(FLOAT,NULL,NULL,NULL,yylineno);$$->type_float=$1;$$->type=FLOAT;}
-      | CHAR           {$$=mknode(CHAR,NULL,NULL,NULL,yylineno);strcpy(yylval.type_char,$1);$$->type=CHAR;}
-      | STRING         {$$=mknode(STRING,NULL,NULL,NULL,yylineno);strcpy(yylval.type_string,$1);$$->type=STRING;}
+      | CHAR           {$$=mknode(CHAR,NULL,NULL,NULL,yylineno);$$->type_char=$1;$$->type=CHAR;}
+      | STRING         {$$=mknode(STRING,NULL,NULL,NULL,yylineno);strcpy($$->type_string,$1);$$->type=STRING;}
       ;
 
 Args:    Exp COMMA Args    {$$=mknode(ARGS,$1,$3,NULL,yylineno);}

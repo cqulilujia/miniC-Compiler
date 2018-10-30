@@ -95,7 +95,7 @@ union YYSTYPE
 
     int    type_int;
     float  type_float;
-    char type_char[3];
+    char type_char;
     char type_string[31];
     char   type_id[32];
     struct node *ptr;

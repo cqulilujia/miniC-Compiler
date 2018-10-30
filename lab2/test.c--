@@ -12,6 +12,7 @@ int fibo(int a)
 int main()
 {
     int m, n, i;
+    float z,x;
     m = read();
 
     while (i <= m)

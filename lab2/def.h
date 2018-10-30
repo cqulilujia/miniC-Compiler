@@ -10,6 +10,7 @@ enum node_kind
     EXT_VAR_DEF,
     FUNC_DEF,
     FUNC_DEC,
+    EXT_STRUCT_DEF,
     STRUCT_DEF,
     STRUCT_DEC,
     STRUCT_TAG,
@@ -75,7 +76,7 @@ union Value {
     char type_id[33]; //由标识符生成的叶结点
     int type_int;     //由整常数生成的叶结点
     float type_float; //由浮点常数生成的叶结点
-    char type_char[3];
+    char type_char;
     char type_string[31];
 };
 
@@ -105,7 +106,7 @@ struct node
         char type_id[33]; //由标识符生成的叶结点
         int type_int;     //由整常数生成的叶结点
         float type_float; //由浮点常数生成的叶结点
-        char type_char[3];
+        char type_char;
         char type_string[31];
         struct Array *type_array;
         struct Struct *type_struct;

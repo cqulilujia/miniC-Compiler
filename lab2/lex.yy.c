@@ -561,7 +561,7 @@ int yycolumn=1;
 typedef union {
 	int type_int;
 	float type_float;
-	char type_char[3];
+	char type_char;
 	char type_string[31];
 	char type_id[32];
 	struct node *ptr;
@@ -868,7 +868,7 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 30 "lex.l"
-{if(strlen(yytext)==2){strcpy(yylval.type_char, "");}else{strncpy(yylval.type_char,yytext+1,strlen(yytext)-2);}return CHAR;}
+{if(strlen(yytext)==2){yylval.type_char = '\0';}else{yylval.type_char = *(yytext+1);}return CHAR;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP

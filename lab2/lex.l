@@ -8,7 +8,7 @@ int yycolumn=1;
 typedef union {
 	int type_int;
 	float type_float;
-	char type_char[3];
+	char type_char;
 	char type_string[31];
 	char type_id[32];
 	struct node *ptr;
@@ -27,7 +27,7 @@ string (\"[A-Za-z0-9]*\")
 %%
 {int}        {yylval.type_int=atoi(yytext);return INT;}
 {float}      {yylval.type_float=atof(yytext);return FLOAT;}
-{char}        {if(strlen(yytext)==2){strcpy(yylval.type_char, "");}else{strncpy(yylval.type_char,yytext+1,strlen(yytext)-2);}return CHAR;}
+{char}        {if(strlen(yytext)==2){yylval.type_char = '\0';}else{yylval.type_char = *(yytext+1);}return CHAR;}
 {string}      {if(strlen(yytext)==2){strcpy(yylval.type_string, "");}else{strncpy(yylval.type_string,yytext+1,strlen(yytext)-2);}return STRING;}
 
 "int"        {strcpy(yylval.type_id,  yytext);return TYPE;}
