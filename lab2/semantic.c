@@ -1,5 +1,8 @@
 #include "def.h"
 
+int LEV = 0;   //层号
+int func_size; //1个函数的活动记录大小
+
 char *strcat0(char *s1, char *s2)
 {
     static char result[10];
@@ -171,20 +174,34 @@ void prnIR(struct codenode *head)
         h = h->next;
     } while (h != head);
 }
+
 void semantic_error(int line, char *msg1, char *msg2)
 {
-    //这里可以只收集错误信息，最后在一次显示
+    // 这里可以只收集错误信息，最后在一次显示
     printf("在%d行,%s %s\n", line, msg1, msg2);
 }
+
 void prn_symbol()
 { //显示符号表
     int i = 0;
-    printf("%6s %6s %6s  %6s %4s %6s\n", "变量名", "别 名", "层 号", "类  型", "标记", "偏移量");
+    printf("  %6s  %6s   %6s   %6s  %4s  %6s\n", "变量名", "别名", "层号", "类型", "标记", "偏移量");
     for (i = 0; i < symbolTable.index; i++)
         printf("%6s %6s %6d  %6s %4c %6d\n", symbolTable.symbols[i].name,
                symbolTable.symbols[i].alias, symbolTable.symbols[i].level,
                symbolTable.symbols[i].type == INT ? "int" : "float",
                symbolTable.symbols[i].flag, symbolTable.symbols[i].offset);
+}
+
+// TODO
+void prn_code(struct codenode *code)
+{ // 输出中间代码
+
+    printf("输出中间代码\n");
+    while (code)
+    {
+        printf("%d %d %d %d\n", code->op, code->opn1.kind, code->opn2.kind, code->result.kind);
+        code = code->next;
+    }
 }
 
 int searchSymbolTable(char *name)
@@ -197,8 +214,8 @@ int searchSymbolTable(char *name)
 }
 
 int fillSymbolTable(char *name, char *alias, int level, int type, char flag, int offset)
-{
-    //首先根据name查符号表，不能重复定义 重复定义返回-1
+{ // 首先根据name查符号表，不能重复定义 重复定义返回-1
+
     int i;
     /*符号查重，考虑外部变量声明前有函数定义，
     其形参名还在符号表中，这时的外部变量与前函数的形参重名是允许的*/
@@ -231,9 +248,6 @@ int fill_Temp(char *name, int level, int type, char flag, int offset)
     return symbolTable.index++; //返回的是临时变量在符号表中的位置序号
 }
 
-int LEV = 0;   //层号
-int func_size; //1个函数的活动记录大小
-
 void ext_var_list(struct node *T)
 { //处理变量列表
     int rtn, num = 1;
@@ -257,11 +271,13 @@ void ext_var_list(struct node *T)
             T->place = rtn;
         T->num = 1;
         break;
+    default:
+        break;
     }
 }
 
 int match_param(int i, struct node *T)
-{
+{ // 匹配函数参数
     int j, num = symbolTable.symbols[i].paramnum;
     int type1, type2;
     if (num == 0 && T == NULL)
@@ -393,6 +409,8 @@ void boolExp(struct node *T)
             strcpy(T->ptr[0]->Efalse, T->Etrue);
             boolExp(T->ptr[0]);
             T->code = T->ptr[0]->code;
+            break;
+        default:
             break;
         }
     }
@@ -898,7 +916,8 @@ void semantic_Analysis0(struct node *T)
     symbolTable.symbols[2].paramnum = 1;
     symbol_scope_TX.TX[0] = 0; //外部变量在符号表中的起始序号为0
     symbol_scope_TX.top = 1;
-    T->offset = 0; //外部变量在数据区的偏移量
+    T->offset = 0; // 外部变量在数据区的偏移量
     semantic_Analysis(T);
+    // prn_code(T->code);
     // objectCode(T->code);
 }

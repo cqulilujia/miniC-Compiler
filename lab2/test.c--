@@ -1,6 +1,5 @@
 int a, b, c;
 
-
 // 斐波拉契
 int fibo(int a)
 {
@@ -13,7 +12,6 @@ int fibo(int a)
 int main()
 {
     int m, n, i;
-
     m = read();
 
     while (i <= m)
@@ -21,5 +19,6 @@ int main()
         n = fibo(i);
         write(n);
     }
+
     return 1;
 }

@@ -868,12 +868,12 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 30 "lex.l"
-{strcpy(yylval.type_char,yytext);return CHAR;}
+{if(strlen(yytext)==2){strcpy(yylval.type_char, "");}else{strncpy(yylval.type_char,yytext+1,strlen(yytext)-2);}return CHAR;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 31 "lex.l"
-{strcpy(yylval.type_string,yytext);return STRING;}
+{if(strlen(yytext)==2){strcpy(yylval.type_string, "");}else{strncpy(yylval.type_string,yytext+1,strlen(yytext)-2);}return STRING;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP

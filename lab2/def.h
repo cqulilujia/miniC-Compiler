@@ -43,6 +43,7 @@ enum node_kind
     EQ,
     NEQ
 };
+
 #define MAXLENGTH 1000     //定义符号表的大小
 #define DX 3 * sizeof(int) //活动记录控制信息需要的单元数
 
@@ -54,7 +55,10 @@ struct opn
         int const_int;     //整常数值，立即数
         float const_float; //浮点常数值，立即数
         char const_char;   //字符常数值，立即数
-        char id[33];       //变量或临时变量的别名或标号字符串
+        char *const_string;
+        char id[33]; //变量或临时变量的别名或标号字符串
+        struct Array *type_array;
+        struct Struct *type_struct;
     };
     int level;  //变量的层号，0表示是全局变量，数据保存在静态数据区
     int offset; //变量单元偏移量，或函数在符号表的定义位置序号，目标代码生成时用
@@ -88,7 +92,7 @@ struct Array
 struct Struct
 {
     int kind;
-    char id[32]; // 字段名字
+    char *name; // 字段名字
     union Value value;
     struct Struct *next;
 };

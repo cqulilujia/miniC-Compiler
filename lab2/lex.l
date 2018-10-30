@@ -27,8 +27,8 @@ string (\"[A-Za-z0-9]*\")
 %%
 {int}        {yylval.type_int=atoi(yytext);return INT;}
 {float}      {yylval.type_float=atof(yytext);return FLOAT;}
-{char}        {strcpy(yylval.type_char,yytext);return CHAR;}
-{string}      {strcpy(yylval.type_string,yytext);return STRING;}
+{char}        {if(strlen(yytext)==2){strcpy(yylval.type_char, "");}else{strncpy(yylval.type_char,yytext+1,strlen(yytext)-2);}return CHAR;}
+{string}      {if(strlen(yytext)==2){strcpy(yylval.type_string, "");}else{strncpy(yylval.type_string,yytext+1,strlen(yytext)-2);}return STRING;}
 
 "int"        {strcpy(yylval.type_id,  yytext);return TYPE;}
 "float"      {strcpy(yylval.type_id,  yytext);return TYPE;}
