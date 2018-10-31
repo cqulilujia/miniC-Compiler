@@ -5,6 +5,7 @@
 #include "math.h"
 #include "string.h"
 #include "def.h"
+
 extern int yylineno;
 extern char *yytext;
 extern FILE *yyin;
