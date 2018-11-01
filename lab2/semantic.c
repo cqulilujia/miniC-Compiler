@@ -13,12 +13,31 @@ void semantic_error(int line, char *msg1, char *msg2)
 void prn_symbol()
 { //显示符号表
     int i = 0;
+    char* symbolsType;
     printf("  %6s  %6s   %6s   %6s  %4s  %6s\n", "变量名", "别名", "层号", "类型", "标记", "偏移量");
     for (i = 0; i < symbolTable.index; i++)
-        printf("%6s %6s %6d  %6s %4c %6d\n", symbolTable.symbols[i].name,
+    {
+      if (symbolTable.symbols[i].type == INT)
+      {
+        symbolsType = "int";
+      }
+      if (symbolTable.symbols[i].type == FLOAT)
+      {
+        symbolsType = "float";
+      }
+      if (symbolTable.symbols[i].type == CHAR)
+      {
+        symbolsType = "char";
+      }
+      if (symbolTable.symbols[i].type == STRING)
+      {
+        symbolsType = "string";
+      }
+      printf("%6s %6s %6d  %6s %4c %6d\n", symbolTable.symbols[i].name,
                symbolTable.symbols[i].alias, symbolTable.symbols[i].level,
-               symbolTable.symbols[i].type == INT ? "int" : "float",
+               symbolsType,
                symbolTable.symbols[i].flag, symbolTable.symbols[i].offset);
+    }
 }
 
 int searchSymbolTable(char *name)
@@ -107,11 +126,20 @@ void Exp(struct node *T)
         case ID: //查符号表，获得符号表中的位置，类型送type
             id_exp(T);
             break;
+        case STRUCT_TAG: // TODO
+            exp_struct_tag(T);
+            break;
         case INT:
             int_exp(T);
             break;
         case FLOAT:
             float_exp(T);
+            break;
+        case CHAR:  // new
+            char_exp(T);
+            break;
+        case STRING:  // TODO
+            string_exp(T);
             break;
         case ASSIGNOP:
             assignop_exp(T);
@@ -135,14 +163,19 @@ void Exp(struct node *T)
             op_exp(T);
             break;
         case NOT: //未写完整
+            not_exp(T);
             break;
         case UMINUS: //未写完整
+            // uminus_exp(T);
             break;
         case FUNC_CALL: //根据T->type_id查出函数的定义，如果语言中增加了实验教材的read，write需要单独处理一下
             func_call_exp(T);
             break;
         case ARGS: //此处仅处理各实参表达式的求值的代码序列，不生成ARG的实参系列
             args_exp(T);
+            break;
+        case EXP_ARRAY: // TODO
+            exp_array(T);
             break;
         }
     }
@@ -164,10 +197,17 @@ void semantic_Analysis(struct node *T)
             ext_var_def(T);
             break;
         case EXT_STRUCT_DEF: // TODO
+            ext_struct_def(T);
             break;
-        case STRUCT_DEF:
+        case STRUCT_DEF: // TODO
+            struct_def(T);
             break;
-        case STRUCT_DEC:
+        case STRUCT_DEC: // TODO
+            struct_dec(T);
+            break;
+        case ARRAY_DEC:
+            printf("array\n");
+            array_dec(T);
             break;
         case FUNC_DEF:
             func_def(T);
@@ -210,6 +250,7 @@ void semantic_Analysis(struct node *T)
             return_dec(T);
             break;
         case ID:
+        case STRUCT_TAG:
         case INT:
         case FLOAT:
         case CHAR:
@@ -231,6 +272,7 @@ void semantic_Analysis(struct node *T)
         case NOT:
         case UMINUS:
         case FUNC_CALL:
+        case EXP_ARRAY:
             Exp(T); //处理基本表达式
             break;
         }
@@ -250,6 +292,7 @@ void semantic_Analysis0(struct node *T)
     T->offset = 0; // 外部变量在数据区的偏移量
     semantic_Analysis(T);
     // 打印中间代码
+    // printf("\n\n\n\n");
     // prnIR(T->code);
     // 生成目标代码
     // objectCode(T->code);

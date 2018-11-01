@@ -27,6 +27,8 @@ void boolExp(struct node *T);
 void id_exp(struct node *T);
 void int_exp(struct node *T);
 void float_exp(struct node *T);
+void char_exp(struct node *T);
+void string_exp(struct node *T);
 void assignop_exp(struct node *T);
 void relop_exp(struct node *T);
 void args_exp(struct node *T);
@@ -34,6 +36,8 @@ void op_exp(struct node *T);
 void func_call_exp(struct node *T);
 void not_exp(struct node *T);
 void unminus_exp(struct node *T);
+void exp_array(struct node *T);
+void exp_struct_tag(struct node *T);
 
 // semantic_case.c
 void ext_var_list(struct node *T);
@@ -41,6 +45,10 @@ void ext_def_list(struct node *T);
 void ext_var_def(struct node *T);
 void func_def(struct node *T);
 void func_dec(struct node *T);
+void ext_struct_def(struct node *T);
+void struct_def(struct node *T);
+void struct_dec(struct node *T);
+void array_dec(struct node *T);
 void param_list(struct node *T);
 void param_dec(struct node *T);
 void comp_stm(struct node *T);

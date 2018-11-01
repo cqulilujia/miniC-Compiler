@@ -23,7 +23,7 @@ void display(struct node *,int);
 };
 
 //  %type 定义非终结符的语义值类型
-%type  <ptr> program ExtDefList ExtDef Specifier StructSpecifier OptTag Tag ExtDecList FuncDec CompSt VarList VarDec ParamDec Stmt ForDec StmList DefList Def DecList Dec Exp Args
+%type  <ptr> program ExtDefList ExtDef Specifier StructSpecifier OptTag ExtDecList FuncDec CompSt VarList VarDec ParamDec Stmt ForDec StmList DefList Def DecList Dec Exp Args
 
 //% token 定义终结符的语义值类型
 %token <type_int> INT              //指定INT的语义值是type_int，有词法分析得到的数值
@@ -69,18 +69,16 @@ ExtDecList:  VarDec      {$$=$1;}       /*每一个EXT_DECLIST的结点，其第
 Specifier:  TYPE    {$$=mknode(TYPE,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);if(!strcmp($1, "int"))$$->type=INT;if(!strcmp($1, "float"))$$->type=FLOAT;if(!strcmp($1, "char"))$$->type=CHAR;if(!strcmp($1, "string"))$$->type=STRING;}
            | StructSpecifier {$$=$1;}
            ;
+
 StructSpecifier: STRUCT OptTag LC DefList RC {$$=mknode(STRUCT_DEF,$2,$4,NULL,yylineno);}
-          | STRUCT Tag  {$$=mknode(STRUCT_DEC,$2,NULL,NULL,yylineno);}
+          | STRUCT OptTag  {$$=mknode(STRUCT_DEC,$2,NULL,NULL,yylineno);}
           ;
 
-OptTag: {$$=NULL;}
-       | ID {$$=mknode(STRUCT_TAG,NULL,NULL,NULL,yylineno);strcpy($$->struct_name,$1);}
+OptTag: ID {$$=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
        ;
-Tag: ID {$$=mknode(STRUCT_TAG,NULL,NULL,NULL,yylineno);strcpy($$->struct_name,$1);}
-    ;
 
 VarDec:  ID          {$$=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}   //ID结点，标识符符号串存放结点的type_id
-        | VarDec LB INT RB {struct node *temp=mknode(INT,NULL,NULL,NULL,yylineno);temp->type_int=$3;$$->type=INT;$$=mknode(ARRAY_DEC, $1, temp, NULL,yylineno);}
+        | VarDec LB INT RB {struct node *temp=mknode(INT,NULL,NULL,NULL,yylineno);temp->type_int=$3;$$=mknode(ARRAY_DEC, $1, temp, NULL,yylineno);}
          ;
 
 FuncDec: ID LP VarList RP   {$$=mknode(FUNC_DEC,$3,NULL,NULL,yylineno);strcpy($$->type_id,$1);}//函数名存放在$$->type_id

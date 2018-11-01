@@ -100,7 +100,8 @@ void func_def(struct node *T)
     if (!strcmp(T->ptr[0]->type_id, "string"))
     {
         T->ptr[1]->type = STRING;
-    } //填写函数定义信息到符号表
+    }
+    //填写函数定义信息到符号表
     // T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT; //获取函数返回类型送到含函数名、参数的结点
     T->width = 0;                  //函数的宽度设置为0，不会对外部变量的地址分配产生影响
     T->offset = DX;                //设置局部变量在活动记录中的偏移量初值
@@ -141,6 +142,70 @@ void func_dec(struct node *T)
     }
     else
         symbolTable.symbols[rtn].paramnum = 0, T->width = 0;
+}
+
+void ext_struct_def(struct node *T)
+{
+    //填写函数定义信息到符号表
+    T->ptr[0]->offset = T->offset;
+    semantic_Analysis(T->ptr[0]);  //处理函数名和参数结点部分，这里不考虑用寄存器传递参数
+    T->code = T->ptr[0]->code;
+}
+
+void struct_def(struct node *T)
+{
+    int rtn;
+    struct opn opn1, opn2, result;
+
+    T->width = 0;                  //函数的宽度设置为0，不会对外部变量的地址分配产生影响
+    T->offset = DX;                //设置局部变量在活动记录中的偏移量初值
+    T->type = STRUCT;
+    rtn = fillSymbolTable(T->type_id, newAlias(), LEV, STRUCT, 'S', 0); //函数不在数据区中分配单元，偏移量为0
+    if (rtn == -1)
+    {
+        semantic_error(T->pos, T->type_id, "结构体重复定义");
+        return;
+    }
+    else
+        T->place = rtn;
+
+    T->ptr[1]->offset = T->offset;
+    semantic_Analysis(T->ptr[1]);
+}
+
+void struct_dec(struct node *T)
+{
+    T->ptr[0]->offset = T->offset;
+    semantic_Analysis(T->ptr[0]);
+    T->width = T->ptr[1]->width;
+}
+
+void array_dec(struct node *T)
+{
+    int width, rtn;
+    if (T->type == INT)
+    {
+        width = 4;
+    }
+    if (T->type == FLOAT)
+    {
+       width = 8;
+    }
+    if (T->type == CHAR)
+    {
+       width = 1;
+    }
+    T->width = width * T->ptr[1]->type_int;
+    T->ptr[0]->offset = T->offset;
+    rtn = fillSymbolTable(T->type_id, newAlias(), LEV, T->type, 'V', 0); //函数不在数据区中分配单元，偏移量为0
+    if (rtn == -1)
+    {
+        semantic_error(T->pos, T->type_id, "数组重复定义");
+        return;
+    }
+    else
+        T->place = rtn;
+    semantic_Analysis(T->ptr[0]);
 }
 
 void param_list(struct node *T)
@@ -232,18 +297,38 @@ void var_def(struct node *T)
     struct node *T0;
     struct opn opn1, opn2, result;
     T->code = NULL;
-    T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT; //确定变量序列各变量类型
+    if (!strcmp(T->ptr[0]->type_id, "int"))
+    {
+        T->ptr[1]->type = INT;
+        width = 4;
+    }
+    if (!strcmp(T->ptr[0]->type_id, "float"))
+    {
+        T->ptr[1]->type = FLOAT;
+        width = 8;
+    }
+    if (!strcmp(T->ptr[0]->type_id, "char"))
+    {
+        T->ptr[1]->type = CHAR;
+        width = 1;
+    }
+    if (!strcmp(T->ptr[0]->type_id, "string"))
+    {
+        T->ptr[1]->type = STRING;
+    }
+    // T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT; //确定变量序列各变量类型
     T0 = T->ptr[1];                                                     //T0为变量名列表子树根指针，对ID、ASSIGNOP类结点在登记到符号表，作为局部变量
     num = 0;
     T0->offset = T->offset;
     T->width = 0;
-    width = T->ptr[1]->type == INT ? 4 : 8; //一个变量宽度
+    // width = T->ptr[1]->type == INT ? 4 : 8; //一个变量宽度
     while (T0)
     { //处理所以DEC_LIST结点
         num++;
         T0->ptr[0]->type = T0->type; //类型属性向下传递
         if (T0->ptr[1])
             T0->ptr[1]->type = T0->type;
+
         T0->ptr[0]->offset = T0->offset; //类型属性向下传递
         if (T0->ptr[1])
             T0->ptr[1]->offset = T0->offset + width;

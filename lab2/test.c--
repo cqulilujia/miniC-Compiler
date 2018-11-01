@@ -1,6 +1,13 @@
 int a, b, c;
 
-// 斐波拉契
+int d, arr[3], h;
+
+
+struct TestS {
+    int elm1;
+    float elm2;
+} str1;
+
 int fibo(int a)
 {
     if (a == 1 || a == 2)
@@ -8,13 +15,20 @@ int fibo(int a)
     return fibo(a - 1) + fibo(a - 2);
 }
 
-/* 主函数 */
+
 int main()
 {
+    char c1;
+    string s1;
     int m, n, i;
     float z,x;
     m = read();
 
+    c1 = '1';
+    s1 = "123";
+    c = 1;
+    // arr[0] = 1;
+    // str1.elm1 = 1;
     while (i <= m)
     {
         n = fibo(i);

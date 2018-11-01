@@ -165,6 +165,37 @@ void float_exp(struct node *T)
     T->width = 4;
 }
 
+void char_exp(struct node *T)
+{
+    int rtn, num, width;
+    struct opn opn1, opn2, result;
+    T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset); //为整常量生成一个临时变量
+    T->type = CHAR;
+    opn1.kind = CHAR;
+    opn1.const_char = T->type_char;
+    result.kind = ID;
+    strcpy(result.id, symbolTable.symbols[T->place].alias);
+    result.offset = symbolTable.symbols[T->place].offset;
+    T->code = genIR(ASSIGNOP, opn1, opn2, result);
+    T->width = 1;
+}
+
+void string_exp(struct node *T)
+{
+    int rtn, num, width;
+    struct opn opn1, opn2, result;
+    T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset); //为整常量生成一个临时变量
+    T->type = STRING;
+    opn1.kind = STRING;
+    // strcpy(opn1.const_string, T->type_string);
+    opn1.const_string = T->type_string;
+    result.kind = ID;
+    strcpy(result.id, symbolTable.symbols[T->place].alias);
+    result.offset = symbolTable.symbols[T->place].offset;
+    T->code = genIR(ASSIGNOP, opn1, opn2, result);
+    // T->width = 1;
+}
+
 void assignop_exp(struct node *T)
 {
     int rtn, num, width;
@@ -181,6 +212,7 @@ void assignop_exp(struct node *T)
         T->type = T->ptr[0]->type;
         T->width = T->ptr[1]->width;
         T->code = merge(2, T->ptr[0]->code, T->ptr[1]->code);
+
         opn1.kind = ID;
         strcpy(opn1.id, symbolTable.symbols[T->ptr[1]->place].alias); //右值一定是个变量或临时变量
         opn1.offset = symbolTable.symbols[T->ptr[1]->place].offset;
@@ -295,8 +327,24 @@ void func_call_exp(struct node *T)
 
 void not_exp(struct node *T)
 {
+    T->type = INT;
+    T->ptr[0]->offset = T->offset;
+    Exp(T->ptr[0]);
 }
 
 void unminus_exp(struct node *T)
 {
+    T->type = T->ptr[0]->type;
+    T->ptr[0]->offset = T->offset;
+    Exp(T->ptr[0]);
+}
+
+void exp_array(struct node *T)
+{
+
+}
+
+void exp_struct_tag(struct node *T)
+{
+
 }
