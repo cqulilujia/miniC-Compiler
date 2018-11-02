@@ -296,5 +296,5 @@ void semantic_Analysis0(struct node *T)
     // printf("\n\n\n\n");
     // prnIR(T->code);
     // 生成目标代码
-    // objectCode(T->code);
+    objectCode(T->code);
 }
