@@ -148,7 +148,7 @@ void ext_struct_def(struct node *T)
 {
     //填写函数定义信息到符号表
     T->ptr[0]->offset = T->offset;
-    semantic_Analysis(T->ptr[0]);  //处理函数名和参数结点部分，这里不考虑用寄存器传递参数
+    semantic_Analysis(T->ptr[0]); //处理函数名和参数结点部分，这里不考虑用寄存器传递参数
     T->code = T->ptr[0]->code;
 }
 
@@ -157,8 +157,8 @@ void struct_def(struct node *T)
     int rtn;
     struct opn opn1, opn2, result;
 
-    T->width = 0;                  //函数的宽度设置为0，不会对外部变量的地址分配产生影响
-    T->offset = DX;                //设置局部变量在活动记录中的偏移量初值
+    T->width = 0;   //函数的宽度设置为0，不会对外部变量的地址分配产生影响
+    T->offset = DX; //设置局部变量在活动记录中的偏移量初值
     T->type = STRUCT;
     rtn = fillSymbolTable(T->type_id, newAlias(), LEV, STRUCT, 'S', 0); //函数不在数据区中分配单元，偏移量为0
     if (rtn == -1)
@@ -189,11 +189,11 @@ void array_dec(struct node *T)
     }
     if (T->type == FLOAT)
     {
-       width = 8;
+        width = 8;
     }
     if (T->type == CHAR)
     {
-       width = 1;
+        width = 1;
     }
     T->width = width * T->ptr[1]->type_int;
     T->ptr[0]->offset = T->offset;
@@ -317,7 +317,7 @@ void var_def(struct node *T)
         T->ptr[1]->type = STRING;
     }
     // T->ptr[1]->type = !strcmp(T->ptr[0]->type_id, "int") ? INT : FLOAT; //确定变量序列各变量类型
-    T0 = T->ptr[1];                                                     //T0为变量名列表子树根指针，对ID、ASSIGNOP类结点在登记到符号表，作为局部变量
+    T0 = T->ptr[1]; //T0为变量名列表子树根指针，对ID、ASSIGNOP类结点在登记到符号表，作为局部变量
     num = 0;
     T0->offset = T->offset;
     T->width = 0;

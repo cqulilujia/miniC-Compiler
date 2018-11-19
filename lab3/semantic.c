@@ -13,27 +13,27 @@ void semantic_error(int line, char *msg1, char *msg2)
 void prn_symbol()
 { //显示符号表
     int i = 0;
-    char* symbolsType;
+    char *symbolsType;
     printf("  %6s  %6s   %6s   %6s  %4s  %6s\n", "变量名", "别名", "层号", "类型", "标记", "偏移量");
     for (i = 0; i < symbolTable.index; i++)
     {
-      if (symbolTable.symbols[i].type == INT)
-      {
-        symbolsType = "int";
-      }
-      if (symbolTable.symbols[i].type == FLOAT)
-      {
-        symbolsType = "float";
-      }
-      if (symbolTable.symbols[i].type == CHAR)
-      {
-        symbolsType = "char";
-      }
-      if (symbolTable.symbols[i].type == STRING)
-      {
-        symbolsType = "string";
-      }
-      printf("%6s %6s %6d  %6s %4c %6d\n", symbolTable.symbols[i].name,
+        if (symbolTable.symbols[i].type == INT)
+        {
+            symbolsType = "int";
+        }
+        if (symbolTable.symbols[i].type == FLOAT)
+        {
+            symbolsType = "float";
+        }
+        if (symbolTable.symbols[i].type == CHAR)
+        {
+            symbolsType = "char";
+        }
+        if (symbolTable.symbols[i].type == STRING)
+        {
+            symbolsType = "string";
+        }
+        printf("%6s %6s %6d  %6s %4c %6d\n", symbolTable.symbols[i].name,
                symbolTable.symbols[i].alias, symbolTable.symbols[i].level,
                symbolsType,
                symbolTable.symbols[i].flag, symbolTable.symbols[i].offset);
@@ -135,10 +135,10 @@ void Exp(struct node *T)
         case FLOAT:
             float_exp(T);
             break;
-        case CHAR:  // new
+        case CHAR: // new
             char_exp(T);
             break;
-        case STRING:  // TODO
+        case STRING: // TODO
             string_exp(T);
             break;
         case ASSIGNOP:
@@ -294,7 +294,7 @@ void semantic_Analysis0(struct node *T)
     // prn_symbol();
     // 打印中间代码
     // printf("\n\n\n\n");
-    // prnIR(T->code);
+    prnIR(T->code);
     // 生成目标代码
     // objectCode(T->code);
 }

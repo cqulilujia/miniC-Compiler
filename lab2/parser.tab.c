@@ -1602,7 +1602,7 @@ yyreduce:
 
   case 17:
 #line 81 "parser.y" /* yacc.c:1646  */
-    {printf("array\n") ;struct node *temp=mknode(INT,NULL,NULL,NULL,yylineno);temp->type_int=(yyvsp[-1].type_int);(yyval.ptr)=mknode(ARRAY_DEC, (yyvsp[-3].ptr), temp, NULL,yylineno);}
+    {struct node *temp=mknode(INT,NULL,NULL,NULL,yylineno);temp->type_int=(yyvsp[-1].type_int);(yyval.ptr)=mknode(ARRAY_DEC, (yyvsp[-3].ptr), temp, NULL,yylineno);}
 #line 1607 "parser.tab.c" /* yacc.c:1646  */
     break;
 
